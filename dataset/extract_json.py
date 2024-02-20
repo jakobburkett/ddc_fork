@@ -12,7 +12,6 @@ if __name__ == '__main__':
     import argparse
     from collections import OrderedDict
     import json
-    json.encoder.FLOAT_REPR = lambda f: ('%.6f' % f)
     from util import ez_name, get_subdirs
 
     parser = argparse.ArgumentParser()
@@ -29,7 +28,7 @@ if __name__ == '__main__':
 
     pack_names = get_subdirs(args.packs_dir, args.choose)
     pack_dirs = [os.path.join(args.packs_dir, pack_name) for pack_name in pack_names]
-    pack_sm_globs = [os.path.join(pack_dir, '*', '*.sm') for pack_dir in pack_dirs]
+    pack_sm_globs = [os.path.join(pack_dir, '*.sm') for pack_dir in pack_dirs]
 
     if not os.path.isdir(args.json_dir):
         os.mkdir(args.json_dir)
@@ -64,9 +63,9 @@ if __name__ == '__main__':
             except ValueError as e:
                 smlog.error('{} in\n{}'.format(e, sm_fp))
                 continue
-            except Exception as e:
+            except Exception:
                 smlog.critical('Unhandled parse exception {}'.format(traceback.format_exc()))
-                raise e
+                raise
 
             # check required attrs
             try:
@@ -143,4 +142,4 @@ if __name__ == '__main__':
                     smlog.error('Unicode error in {}'.format(sm_fp))
                     continue
 
-            print 'Parsed {} - {}: {} charts'.format(pack_name, sm_name, len(out_json['charts']))
+            print('Parsed {} - {}: {} charts'.format(pack_name, sm_name, len(out_json['charts'])))
