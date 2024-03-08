@@ -1,2 +1,7 @@
 *.pyc
 .venv/
+/data
+workspace_tree.txt
+*.zip
+errors.txt
+*.py.bak

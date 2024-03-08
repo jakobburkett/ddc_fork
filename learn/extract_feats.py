@@ -2,6 +2,10 @@ import essentia
 from essentia.standard import MonoLoader, FrameGenerator, Windowing, Spectrum, MelBands
 import numpy as np
 from tqdm import tqdm
+import argparse
+import pickle
+import json
+import os
 
 def create_analyzers(fs=44100.0,
                      nhop=512,
@@ -44,11 +48,6 @@ def extract_mel_feats(audio_fp, analyzers, fs=44100.0, nhop=512, nffts=[1024, 20
     return feat_channels
 
 if __name__ == '__main__':
-    import argparse
-    import cPickle as pickle
-    import json
-    import os
-
     parser = argparse.ArgumentParser()
 
     parser.add_argument('dataset_fps', type=str, nargs='+', help='')
@@ -70,7 +69,7 @@ if __name__ == '__main__':
 
     nffts = [int(x) for x in args.nffts.split(',')]
 
-    # Create anlyzers
+    # Create analyzers
     analyzers = create_analyzers(fs=44100.0, nhop=args.nhop, nffts=nffts, mel_nband=args.mel_nband)
 
     # Create outdir
@@ -80,11 +79,12 @@ if __name__ == '__main__':
     # Iterate through packs extracting features
     for dataset_fp in args.dataset_fps:
         with open(dataset_fp, 'r') as f:
-            json_fps = f.read().splitlines()
+            # json_fps = f.read().splitlines()
+            json_fps = [fp for fp in f.read().splitlines() if fp != ""]
 
         for json_fp in json_fps:
             song_name = os.path.splitext(os.path.split(json_fp)[1])[0]
-            print 'Extracting feats from {}'.format(song_name)
+            print(('Extracting feats from {}'.format(song_name)))
 
             with open(json_fp, 'r') as json_f:
                 meta = json.loads(json_f.read())
